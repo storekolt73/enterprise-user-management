@@ -1,0 +1,37 @@
+<header class="app-header">
+  <div class="brand">
+    <span class="brand-mark">EU</span>
+
+    <div>
+      <strong>Enterprise User Management</strong>
+      <span>Administration System</span>
+    </div>
+  </div>
+
+  <div class="header-user">
+    <span class="user-avatar">SA</span>
+
+    <div>
+      <strong>System Admin</strong>
+      <span>Administrator</span>
+    </div>
+  </div>
+</header>
+
+<div class="app-body">
+  <aside class="app-sidebar">
+    <nav aria-label="Main navigation">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        Dashboard
+      </a>
+
+      <a routerLink="/users" routerLinkActive="active">
+        Users
+      </a>
+    </nav>
+  </aside>
+
+  <main class="app-content">
+    <router-outlet />
+  </main>
+</div>
