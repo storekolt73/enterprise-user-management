@@ -88,7 +88,9 @@
     @for (user of users; track user.id) {
       <div class="table-row">
         <span>{{ user.displayName }}</span>
-        <span>{{ user.username }}</span>
+        <a [routerLink]="['/users', user.id]">
+          {{ user.username }}
+        </a>        
         <span>{{ user.email }}</span>
         <span>{{ user.roles.join(', ') }}</span>
         <div class="user-form__actions">
