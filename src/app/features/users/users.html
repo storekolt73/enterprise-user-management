@@ -8,14 +8,81 @@
     <span class="user-count">
       {{ users.length }} users
     </span>
+
+    @if (!showCreateForm) {
+      <button type="button" (click)="openCreateForm()">
+        Create User
+      </button>
+    }
   </header>
 
+@if (showCreateForm) {
+  <form class="user-form" [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <h2>{{ editingUserId ? 'Edit User' : 'Create User' }}</h2>
+
+    <label>
+      Username
+      <input type="text" formControlName="username" />
+
+      @if (
+        userForm.controls.username.invalid &&
+        userForm.controls.username.touched
+      ) {
+        <span>Username is required.</span>
+      }
+    </label>
+
+    <label>
+      Display name
+      <input type="text" formControlName="displayName" />
+
+      @if (
+        userForm.controls.displayName.invalid &&
+        userForm.controls.displayName.touched
+      ) {
+        <span>Display name is required.</span>
+      }
+    </label>
+
+    <label>
+      Email
+      <input type="email" formControlName="email" />
+
+      @if (
+        userForm.controls.email.invalid &&
+        userForm.controls.email.touched
+      ) {
+        <span>Enter a valid email address.</span>
+      }
+    </label>
+
+    <label>
+      Role
+      <select formControlName="role">
+        @for (role of roles; track role) {
+          <option [value]="role">{{ role }}</option>
+        }
+      </select>
+    </label>
+
+    <div class="user-form__actions">
+      <button type="submit">
+        {{ editingUserId ? 'Save changes' : 'Create' }}
+      </button>
+
+      <button type="button" (click)="cancelForm()">
+        Cancel
+      </button>
+    </div>
+  </form>
+}
   <div class="users-table">
     <div class="table-header">
       <span>Name</span>
       <span>Username</span>
       <span>Email</span>
       <span>Role</span>
+      <span>Actions</span>
     </div>
 
     @for (user of users; track user.id) {
@@ -24,6 +91,14 @@
         <span>{{ user.username }}</span>
         <span>{{ user.email }}</span>
         <span>{{ user.roles.join(', ') }}</span>
+        <div class="user-form__actions">
+          <button type="button" (click)="openEditForm(user)">
+            Edit
+          </button>
+          <button type="button" (click)="deleteUser(user)">
+            Delete
+          </button>
+        </div>
       </div>
     }
   </div>
