@@ -27,6 +27,34 @@ export class UsersService {
       email: 'jane.smith@example.com',
       roles: ['manager', 'user'],
     },
+    {
+      id: '4',
+      username: 'alice.jones',
+      displayName: 'Alice Jones',
+      email: 'alice.jones@example.com',
+      roles: ['user'],
+    },
+    {
+      id: '5',
+      username: 'bob.wilson',
+      displayName: 'Bob Wilson',
+      email: 'bob.wilson@example.com',
+      roles: ['manager', 'admin'],
+    },
+    {
+      id: '6',
+      username: 'charlie.brown',
+      displayName: 'Charlie Brown',
+      email: 'charlie.brown@example.com',
+      roles: ['user'],
+    },
+    {
+      id: '7',
+      username: 'david.miller',
+      displayName: 'David Miller',
+      email: 'david.miller@example.com',
+      roles: ['admin'],
+    },
   ];
 
   getUsers(): User[] {

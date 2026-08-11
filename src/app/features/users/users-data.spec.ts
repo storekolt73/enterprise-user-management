@@ -15,7 +15,7 @@ describe('UsersService', () => {
   });
 
   it('should return all users', () => {
-    expect(service.getUsers()).toHaveLength(3);
+    expect(service.getUsers()).toHaveLength(7);
   });
 
   it('should return a user by id', () => {
@@ -30,16 +30,16 @@ describe('UsersService', () => {
 
   it('should create a user', () => {
     const user: User = {
-      id: '4',
-      username: 'alice',
-      displayName: 'Alice Johnson',
-      email: 'alice@example.com',
+      id: '99',
+      username: 'alfa',
+      displayName: 'Alfa Beta',
+      email: 'alfa@beta.com',
       roles: ['user'],
     };
 
     service.createUser(user);
 
-    expect(service.getUserById('4')).toEqual(user);
+    expect(service.getUserById('99')).toEqual(user);
   });
 
   it('should update an existing user', () => {

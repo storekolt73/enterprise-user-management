@@ -9,6 +9,9 @@ import { UsersService } from './users-data';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
+type SortField = 'username' | 'displayName' | 'email';
+type SortDirection = 'asc' | 'desc';
+
 @Component({
   selector: 'app-users',
   imports: [ReactiveFormsModule, RouterLink, FormsModule],
@@ -35,7 +38,11 @@ export class Users implements OnInit {
 
   searchTerm = '';
   selectedRole: UserRole | 'all' = 'all';
-  
+  currentPage = 1;
+  readonly pageSize = 5;
+  sortField: SortField | null = null;
+  sortDirection: SortDirection = 'asc';
+
   get filteredUsers(): User[] {
     const search = this.searchTerm.trim().toLowerCase();
 
@@ -53,6 +60,63 @@ export class Users implements OnInit {
       return matchesSearch && matchesRole;
     });
   }
+
+  get paginatedUsers(): User[] {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    return this.sortedUsers.slice(
+      startIndex,
+      startIndex + this.pageSize,
+    );
+  }
+
+  get sortedUsers(): User[] {
+    const users = [...this.filteredUsers];
+    if (!this.sortField) {
+      return users;
+    }
+
+    users.sort((a, b) => {
+      const aValue = a[this.sortField!].toLowerCase();
+      const bValue = b[this.sortField!].toLowerCase();
+
+      const comparison = aValue.localeCompare(bValue);
+
+      return this.sortDirection === 'asc'
+        ? comparison
+        : -comparison;
+    });
+
+    return users;
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredUsers.length / this.pageSize);
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  sortBy(field: SortField): void {
+    if (this.sortField === field) {
+      this.sortDirection =
+        this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDirection = 'asc';
+    }
+
+    this.currentPage = 1;
+  }
+  
   openCreateForm(): void {
     this.editingUserId = null;
 
