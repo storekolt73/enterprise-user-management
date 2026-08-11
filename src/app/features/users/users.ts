@@ -34,23 +34,25 @@ export class Users implements OnInit {
   editingUserId: string | null = null;
 
   searchTerm = '';
-
+  selectedRole: UserRole | 'all' = 'all';
+  
   get filteredUsers(): User[] {
     const search = this.searchTerm.trim().toLowerCase();
 
-    if (!search) {
-      return this.users;
-    }
+    return this.users.filter((user) => {
+      const matchesSearch =
+        !search ||
+        user.username.toLowerCase().includes(search) ||
+        user.displayName.toLowerCase().includes(search) ||
+        user.email.toLowerCase().includes(search);
 
-    return this.users.filter((user) =>
-      [
-        user.username,
-        user.displayName,
-        user.email,
-      ].some((value) => value.toLowerCase().includes(search)),
-    );
+      const matchesRole =
+        this.selectedRole === 'all' ||
+        user.roles.includes(this.selectedRole);
+
+      return matchesSearch && matchesRole;
+    });
   }
-
   openCreateForm(): void {
     this.editingUserId = null;
 

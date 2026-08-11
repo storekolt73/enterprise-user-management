@@ -27,6 +27,17 @@
     />
   </div>
 
+  <div class="role-filter">
+    <label for="role-filter">Role</label>
+    <select id="role-filter" [(ngModel)]="selectedRole">
+      <option value="all">All roles</option>
+
+      @for (role of roles; track role) {
+        <option [value]="role">{{ role }}</option>
+      }
+    </select>
+  </div>
+
 @if (showCreateForm) {
   <form class="user-form" [formGroup]="userForm" (ngSubmit)="onSubmit()">
     <h2>{{ editingUserId ? 'Edit User' : 'Create User' }}</h2>

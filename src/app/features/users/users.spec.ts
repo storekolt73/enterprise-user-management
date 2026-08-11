@@ -115,4 +115,22 @@ describe('Users', () => {
       .toContain('No users found');
   });
 
+  it('should filter users by roles', () => {
+    component.selectedRole = 'admin';
+    fixture.detectChanges();
+
+    expect(component.filteredUsers).toHaveLength(1);
+    expect(component.filteredUsers[0].roles).toContain('admin');
+  });
+
+  it('should filter users by search term and roles', () => {
+    component.searchTerm = 'john';
+    component.selectedRole = 'user';
+    fixture.detectChanges();
+
+    expect(component.filteredUsers).toHaveLength(1);
+    expect(component.filteredUsers[0].roles).toContain('user');
+    expect(component.filteredUsers[0].username).toBe('john.doe');
+  });
+
 });
