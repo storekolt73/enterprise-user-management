@@ -16,26 +16,33 @@
     }
   </header>
 
-  <div class="search-bar">
-    <label for="user-search">Search users</label>
+  <div class="filters">
+    <div class="search-bar">
+      <label for="user-search">Search users</label>
 
-    <input
-      id="user-search"
-      type="search"
-      [(ngModel)]="searchTerm"
-      placeholder="Search by username, name or email"
-    />
-  </div>
+      <input
+        id="user-search"
+        type="search"
+        [(ngModel)]="searchTerm"
+        (input)="currentPage = 1"
+        placeholder="Search by username, name or email"
+      />
+    </div>
 
-  <div class="role-filter">
-    <label for="role-filter">Role</label>
-    <select id="role-filter" [(ngModel)]="selectedRole">
-      <option value="all">All roles</option>
+    <div class="role-filter">
+      <label for="role-filter">Role</label>
+      <select 
+        id="role-filter" 
+        [(ngModel)]="selectedRole"
+        (change)="currentPage = 1">
 
-      @for (role of roles; track role) {
-        <option [value]="role">{{ role }}</option>
-      }
-    </select>
+        <option value="all">All roles</option>
+
+        @for (role of roles; track role) {
+          <option [value]="role">{{ role }}</option>
+        }
+      </select>
+    </div>
   </div>
 
 @if (showCreateForm) {
@@ -100,14 +107,38 @@
 }
   <div class="users-table">
     <div class="table-header">
-      <span>Name</span>
-      <span>Username</span>
-      <span>Email</span>
+      <span><button
+        type="button"
+        class="sort-button"
+        (click)="sortBy('displayName')"
+      >Name
+      @if (sortField === 'displayName') {
+        {{ sortDirection === 'asc' ? '↑' : '↓' }}
+      }     
+      </button></span>
+      <span><button
+        type="button"
+        class="sort-button"
+        (click)="sortBy('username')"
+      >Username
+      @if (sortField === 'username') {
+        {{ sortDirection === 'asc' ? '↑' : '↓' }}
+      }     
+      </button></span>
+      <span><button
+        type="button"
+        class="sort-button"
+        (click)="sortBy('email')"
+      >Email
+      @if (sortField === 'email') {
+        {{ sortDirection === 'asc' ? '↑' : '↓' }}
+      }     
+      </button></span>
       <span>Role</span>
       <span>Actions</span>
     </div>
 
-    @for (user of filteredUsers; track user.id) {
+    @for (user of paginatedUsers; track user.id) {
       <div class="table-row">
         <span>{{ user.displayName }}</span>
         <a [routerLink]="['/users', user.id]">
@@ -133,4 +164,28 @@
     }
 
   </div>
+
+  @if (filteredUsers.length > 0) {
+    <div class="pagination">
+      <button
+        type="button"
+        (click)="previousPage()"
+        [disabled]="currentPage === 1"
+      >
+        Previous
+      </button>
+
+      <span>
+        Page {{ currentPage }} of {{ totalPages }}
+      </span>
+
+      <button
+        type="button"
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages"
+      >
+        Next
+      </button>
+    </div>
+  }
 </section>

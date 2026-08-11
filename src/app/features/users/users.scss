@@ -39,7 +39,7 @@
 .table-header,
 .table-row {
   display: grid;
-  grid-template-columns: 1.5fr 1.2fr 2fr 1fr auto;
+  grid-template-columns: 1.5fr 1.2fr 2fr 1fr 12rem;
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.25rem;
@@ -154,6 +154,28 @@ button {
   outline-offset: 1px;
 }
 
+.filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.filters .search-bar,
+.filters .role-filter {
+  margin-bottom: 0;
+}
+
+.filters .search-bar {
+  flex: 1;
+  max-width: 32rem;
+}
+
+.filters .role-filter {
+  width: 12rem;
+  max-width: none;
+}
+
 .empty-state {
   padding: 2rem;
   border: 1px solid #e2e8f0;
@@ -170,4 +192,68 @@ button {
 .empty-state p {
   margin: 0.4rem 0 0;
   color: #64748b;
+}
+
+.role-filter {
+  display: grid;
+  gap: 0.4rem;
+  max-width: 20rem;
+  margin-bottom: 1.5rem;
+}
+
+.role-filter label {
+  color: #475569;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.role-filter select {
+  padding: 0.7rem 0.8rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  font: inherit;
+}
+
+.sort-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.35rem;
+  min-height: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.sort-button:hover {
+  text-decoration: underline;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.pagination span {
+  min-width: 7rem;
+  color: #475569;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.pagination button:disabled {
+  border-color: #cbd5e1;
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
 }
