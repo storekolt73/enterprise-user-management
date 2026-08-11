@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { UsersService } from './users-data';
 
 @Component({
   selector: 'app-users',
@@ -6,4 +7,9 @@ import { Component } from '@angular/core';
   templateUrl: './users.html',
   styleUrl: './users.scss',
 })
-export class Users {}
+
+export class Users {
+  private readonly usersService = inject(UsersService);
+
+  readonly users = this.usersService.getUsers();
+}

@@ -42,6 +42,7 @@ export class Login {
       return;
     }
 
-    void this.router.navigate(['/']);
+    void this.router.navigate(['/dashboard']);
+    
   }
 }

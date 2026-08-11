@@ -13,12 +13,15 @@ export class AuthService {
   private readonly router = inject(Router);
   private readonly session = signal<AuthSession | null>(null);
   readonly currentUser = this.session.asReadonly();
-  readonly isAuthenticated = signal(false);
+  private readonly authenticated = signal(
+    localStorage.getItem('isAuthenticated') === 'true'
+  );
+  readonly isAuthenticated = this.authenticated.asReadonly();
 
   login(credentials: LoginCredentials): boolean {
     if (
       credentials.username !== 'admin' ||
-      credentials.password !== 'admin123'
+      credentials.password !== 'admin'
     ) {
       return false;
     }
@@ -36,12 +39,13 @@ export class AuthService {
       token: 'mock-access-token',
     });
 
-    this.isAuthenticated.set(true);
-
+    this.authenticated.set(true);
+    localStorage.setItem('isAuthenticated', 'true');
     return true;
   }
 
   logout(): void {
+    this.authenticated.set(false);
     localStorage.removeItem('isAuthenticated');
     this.router.navigate(['/login']);
   }
