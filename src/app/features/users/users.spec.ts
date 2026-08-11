@@ -77,4 +77,42 @@ describe('Users', () => {
     expect(router.navigate).toHaveBeenCalledWith(['/users', '1']);
   });
 
+  it('should show all users when there is no search term', () => {
+    expect(component.filteredUsers).toHaveLength(3);
+  });
+
+  it('should filter users by username', () => {
+    component.searchTerm = 'john';
+    fixture.detectChanges();
+
+    expect(component.filteredUsers).toHaveLength(1);
+    expect(component.filteredUsers[0].username).toBe('john.doe');
+  });
+
+  it('should filter users case-insensitively', () => {
+    component.searchTerm = 'JANE';
+    fixture.detectChanges();
+
+    expect(component.filteredUsers).toHaveLength(1);
+    expect(component.filteredUsers[0].username).toBe('jane.smith');
+  });
+
+  it('should return no users when there is no match', () => {
+    component.searchTerm = 'nonexistent';
+    fixture.detectChanges();
+
+    expect(component.filteredUsers).toHaveLength(0);
+  });
+
+  it('should display an empty state when there are no matching users', () => {
+    component.searchTerm = 'nonexistent';
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    expect(compiled.querySelector('.empty-state')).toBeTruthy();
+    expect(compiled.querySelector('.empty-state')?.textContent)
+      .toContain('No users found');
+  });
+
 });

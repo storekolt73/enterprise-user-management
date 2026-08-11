@@ -128,3 +128,46 @@ button {
   background: #2563eb;
   color: #ffffff;
 }
+
+.search-bar {
+  display: grid;
+  gap: 0.4rem;
+  max-width: 32rem;
+  margin-bottom: 1.5rem;
+}
+
+.search-bar label {
+  color: #475569;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.search-bar input {
+  padding: 0.7rem 0.8rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  font: inherit;
+}
+
+.search-bar input:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: 1px;
+}
+
+.empty-state {
+  padding: 2rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  text-align: center;
+}
+
+.empty-state strong {
+  display: block;
+  color: #0f172a;
+}
+
+.empty-state p {
+  margin: 0.4rem 0 0;
+  color: #64748b;
+}
