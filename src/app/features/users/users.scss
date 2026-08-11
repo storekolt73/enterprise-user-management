@@ -1,67 +1,85 @@
+.users-page {
+  padding: 2rem;
+}
+
 .page-header {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 24px;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  h1 {
+    margin: 0 0 0.35rem;
+    font-size: 1.75rem;
+  }
+
+  p {
+    margin: 0;
+    color: #64748b;
+  }
 }
 
-.page-header h1 {
-  margin: 0;
-  font-size: 28px;
+.user-count {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.875rem;
 }
 
-.page-header p {
-  margin: 8px 0 0;
-  color: #6b7280;
-}
-
-button {
-  padding: 9px 16px;
-  border: 0;
-  border-radius: 6px;
-  background: #1f2937;
-  color: #ffffff;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #374151;
-}
-
-.table-container {
+.users-table {
   overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
   background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+.table-header,
+.table-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1.2fr 2fr 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
 }
 
-th,
-td {
-  padding: 14px 16px;
-  text-align: left;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-th {
-  background: #f9fafb;
-  color: #6b7280;
-  font-size: 12px;
+.table-header {
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.75rem;
   font-weight: 600;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
-td {
-  font-size: 14px;
+.table-row {
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+
+  &:last-child {
+    border-bottom: 0;
+  }
 }
 
-tbody tr:last-child td {
-  border-bottom: 0;
+@media (max-width: 768px) {
+  .users-page {
+    padding: 1rem;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .users-table {
+    overflow-x: auto;
+  }
+
+  .table-header,
+  .table-row {
+    min-width: 700px;
+  }
 }

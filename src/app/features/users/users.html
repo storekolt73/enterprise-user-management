@@ -1,41 +1,30 @@
-<section class="page">
+<section class="users-page">
   <header class="page-header">
     <div>
       <h1>Users</h1>
-      <p>Manage application users and their access.</p>
+      <p>Manage application users.</p>
     </div>
 
-    <button type="button">
-      Add user
-    </button>
+    <span class="user-count">
+      {{ users.length }} users
+    </span>
   </header>
 
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th>Status</th>
-        </tr>
-      </thead>
+  <div class="users-table">
+    <div class="table-header">
+      <span>Name</span>
+      <span>Username</span>
+      <span>Email</span>
+      <span>Role</span>
+    </div>
 
-      <tbody>
-        <tr>
-          <td>John Smith</td>
-          <td>john.smith@example.com</td>
-          <td>Administrator</td>
-          <td>Active</td>
-        </tr>
-
-        <tr>
-          <td>Jane Doe</td>
-          <td>jane.doe@example.com</td>
-          <td>Manager</td>
-          <td>Active</td>
-        </tr>
-      </tbody>
-    </table>
+    @for (user of users; track user.id) {
+      <div class="table-row">
+        <span>{{ user.displayName }}</span>
+        <span>{{ user.username }}</span>
+        <span>{{ user.email }}</span>
+        <span>{{ user.roles.join(', ') }}</span>
+      </div>
+    }
   </div>
 </section>
