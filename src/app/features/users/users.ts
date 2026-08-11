@@ -7,10 +7,11 @@ import {
 import { User, UserRole } from '../../core/auth/auth-models.model';
 import { UsersService } from './users-data';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-users',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, FormsModule],
   templateUrl: './users.html',
   styleUrl: './users.scss',
 })
@@ -31,6 +32,24 @@ export class Users implements OnInit {
 
   showCreateForm = false;
   editingUserId: string | null = null;
+
+  searchTerm = '';
+
+  get filteredUsers(): User[] {
+    const search = this.searchTerm.trim().toLowerCase();
+
+    if (!search) {
+      return this.users;
+    }
+
+    return this.users.filter((user) =>
+      [
+        user.username,
+        user.displayName,
+        user.email,
+      ].some((value) => value.toLowerCase().includes(search)),
+    );
+  }
 
   openCreateForm(): void {
     this.editingUserId = null;

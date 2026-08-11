@@ -16,6 +16,17 @@
     }
   </header>
 
+  <div class="search-bar">
+    <label for="user-search">Search users</label>
+
+    <input
+      id="user-search"
+      type="search"
+      [(ngModel)]="searchTerm"
+      placeholder="Search by username, name or email"
+    />
+  </div>
+
 @if (showCreateForm) {
   <form class="user-form" [formGroup]="userForm" (ngSubmit)="onSubmit()">
     <h2>{{ editingUserId ? 'Edit User' : 'Create User' }}</h2>
@@ -85,7 +96,7 @@
       <span>Actions</span>
     </div>
 
-    @for (user of users; track user.id) {
+    @for (user of filteredUsers; track user.id) {
       <div class="table-row">
         <span>{{ user.displayName }}</span>
         <a [routerLink]="['/users', user.id]">
@@ -103,5 +114,12 @@
         </div>
       </div>
     }
+    
+    @if (filteredUsers.length === 0) {
+      <div class="empty-state">
+        No users found.
+      </div>
+    }
+
   </div>
 </section>
