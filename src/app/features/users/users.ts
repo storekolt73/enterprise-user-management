@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -6,17 +6,19 @@ import {
 } from '@angular/forms';
 import { User, UserRole } from '../../core/auth/auth-models.model';
 import { UsersService } from './users-data';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-users',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './users.html',
   styleUrl: './users.scss',
 })
-export class Users {
+export class Users implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly usersService = inject(UsersService);
-
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   readonly users = this.usersService.getUsers();
   readonly roles: UserRole[] = ['admin', 'manager', 'user'];
 
@@ -57,11 +59,19 @@ export class Users {
   }
 
   cancelForm(): void {
+    const editingUserId = this.editingUserId;
+
     this.showCreateForm = false;
     this.editingUserId = null;
+
+    if (editingUserId && this.route.snapshot.queryParamMap.has('edit')) {
+      void this.router.navigate(['/users', editingUserId]);
+    }
   }
 
   onSubmit(): void {
+    const returnToDetails = this.route.snapshot.queryParamMap.has('edit');
+
     if (this.userForm.invalid) {
       this.userForm.markAllAsTouched();
       return;
@@ -79,6 +89,12 @@ export class Users {
       };
 
       this.usersService.updateUser(user);
+
+      if (returnToDetails && this.editingUserId) {
+        void this.router.navigate(['/users', this.editingUserId]);
+        return;
+      }
+
     } else {
       const user: User = {
         id: crypto.randomUUID(),
@@ -104,5 +120,21 @@ export class Users {
     }
 
     this.usersService.deleteUser(user.id);
+  }
+
+  ngOnInit(): void {
+    this.route.queryParamMap.subscribe((params) => {
+      const userId = params.get('edit');
+
+      if (!userId) {
+        return;
+      }
+
+      const user = this.usersService.getUserById(userId);
+
+      if (user) {
+        this.openEditForm(user);
+      }
+    });
   }
 }
