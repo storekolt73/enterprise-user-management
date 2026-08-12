@@ -16,6 +16,7 @@
     }
   </header>
 
+@if (!showCreateForm) {
   <div class="filters">
     <div class="search-bar">
       <label for="user-search">Search users</label>
@@ -45,108 +46,25 @@
     </div>
   </div>
 
-@if (showCreateForm) {
-  <form class="user-form" [formGroup]="userForm" (ngSubmit)="onSubmit()">
-    <h2>{{ editingUserId ? 'Edit User' : 'Create User' }}</h2>
-
-    <label>
-      Username
-      <input type="text" formControlName="username" />
-
-      @if (
-        userForm.controls.username.touched &&
-        userForm.controls.username.hasError('required')
-      ) {
-        <span class="form-error">Username is required.</span>
-      }
-    </label>
-
-    <label>
-      Display name
-      <input type="text" formControlName="displayName" />
-
-      @if (
-        userForm.controls.displayName.touched &&
-        userForm.controls.displayName.hasError('required')
-      ) {
-        <span class="form-error">Display name is required.</span>
-      }
-    </label>
-
-    <label>
-      Email
-      <input type="email" formControlName="email" />
-
-      @if (
-        userForm.controls.email.touched &&
-        userForm.controls.email.hasError('required')
-      ) {
-        <span class="form-error">Email is required.</span>
-      }
-
-      @if (
-        userForm.controls.email.touched &&
-        userForm.controls.email.hasError('email')
-      ) {
-        <span class="form-error">Enter a valid email address.</span>
-      }
-    </label>
-
-    <label>
-      Role
-      <select formControlName="roles" multiple>
-        @for (role of roles; track role) {
-          <option [value]="role">{{ role }}</option>
-        }
-      </select>
-
-      @if (
-        userForm.controls.roles.touched &&
-        userForm.controls.roles.hasError('required')
-      ) {
-        <span class="form-error">At least one role is required.</span>
-      }
-    </label>
-
-    <div class="user-form__actions">
-      <button type="submit">
-        {{ editingUserId ? 'Save changes' : 'Create' }}
-      </button>
-
-      <button type="button" (click)="cancelForm()">
-        Cancel
-      </button>
-    </div>
-  </form>
-}
-  <div class="users-table">
+  <div class="users-table" matSort (matSortChange)="onSortChange($event)">
     <div class="table-header">
       <span><button
         type="button"
         class="sort-button"
-        (click)="sortBy('displayName')"
+        mat-sort-header="displayName"
       >Name
-      @if (sortField === 'displayName') {
-        {{ sortDirection === 'asc' ? '↑' : '↓' }}
-      }     
       </button></span>
       <span><button
         type="button"
         class="sort-button"
-        (click)="sortBy('username')"
+        mat-sort-header="username"
       >Username
-      @if (sortField === 'username') {
-        {{ sortDirection === 'asc' ? '↑' : '↓' }}
-      }     
       </button></span>
       <span><button
         type="button"
         class="sort-button"
-        (click)="sortBy('email')"
+        mat-sort-header="email"
       >Email
-      @if (sortField === 'email') {
-        {{ sortDirection === 'asc' ? '↑' : '↓' }}
-      }     
       </button></span>
       <span>Role</span>
       <span>Actions</span>
@@ -201,5 +119,94 @@
         Next
       </button>
     </div>
+
+    <mat-paginator
+      [length]="sortedUsers.length"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[5, 10, 25]"
+      [pageIndex]="currentPage - 1"
+      (page)="onPageChange($event)"
+      aria-label="Select page">
+    </mat-paginator>
+
   }
+}
+@else {
+  <form class="user-form" [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <h2>{{ editingUserId ? 'Edit User' : 'Create User' }}</h2>
+
+    <label>
+      Username
+      <input type="text" formControlName="username" />
+
+      @if (
+        userForm.controls.username.touched &&
+        userForm.controls.username.hasError('required')
+      ) {
+        <span class="form-error">Username is required.</span>
+      }
+    </label>
+
+    <label>
+      Display name
+      <input type="text" formControlName="displayName" />
+
+      @if (
+        userForm.controls.displayName.touched &&
+        userForm.controls.displayName.hasError('required')
+      ) {
+        <span class="form-error">Display name is required.</span>
+      }
+    </label>
+
+    <label>
+      Email
+      <input type="email" formControlName="email" />
+
+      @if (
+        userForm.controls.email.touched &&
+        userForm.controls.email.hasError('required')
+      ) {
+        <span class="form-error">Email is required.</span>
+      }
+
+      @if (
+        userForm.controls.email.touched &&
+        userForm.controls.email.hasError('email')
+      ) {
+        <span class="form-error">Enter a valid email address.</span>
+      }
+    </label>
+
+    <mat-form-field>
+      <mat-label>Roles</mat-label>
+
+      <mat-select formControlName="roles" multiple>
+        @for (role of roles; track role) {
+          <mat-option [value]="role">
+            {{ role }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if (
+      userForm.controls.roles.touched &&
+      userForm.controls.roles.hasError('required')
+    ) {
+      <span class="form-error">At least one role is required.</span>
+    }
+
+    <div class="user-form__actions">
+      <button type="submit">
+        {{ editingUserId ? 'Save changes' : 'Create' }}
+      </button>
+
+      <button type="button" (click)="cancelForm()">
+        Cancel
+      </button>
+    </div>
+  </form>
+}
+
 </section>

@@ -9,6 +9,10 @@ import {
 import { UsersService } from './users-data';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatSortModule, Sort } from '@angular/material/sort';
 
 type SortField = 'username' | 'displayName' | 'email';
 type SortDirection = 'asc' | 'desc';
@@ -23,7 +27,15 @@ function atLeastOneRoleValidator(control: AbstractControl,): ValidationErrors | 
 
 @Component({
   selector: 'app-users',
-  imports: [ReactiveFormsModule, RouterLink, FormsModule],
+  imports: [
+    ReactiveFormsModule, 
+    RouterLink, 
+    FormsModule, 
+    MatFormFieldModule,
+    MatSelectModule,
+    MatPaginatorModule,
+    MatSortModule,
+  ],
   templateUrl: './users.html',
   styleUrl: './users.scss',
 })
@@ -48,7 +60,7 @@ export class Users implements OnInit {
   searchTerm = '';
   selectedRole: UserRole | 'all' = 'all';
   currentPage = 1;
-  readonly pageSize = 5;
+  pageSize = 5;
   sortField: SortField | null = null;
   sortDirection: SortDirection = 'asc';
 
@@ -230,5 +242,20 @@ export class Users implements OnInit {
         this.openEditForm(user);
       }
     });
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.currentPage = event.pageIndex + 1;
+    this.pageSize = event.pageSize;
+  }
+
+  onSortChange(sort: Sort): void {
+    if (!sort.direction) {
+      return;
+    }
+
+    this.sortField = sort.active as SortField;
+    this.sortDirection = sort.direction;
+    this.currentPage = 1;
   }
 }
