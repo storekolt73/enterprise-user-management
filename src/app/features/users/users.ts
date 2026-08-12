@@ -3,14 +3,23 @@ import {
   FormBuilder,
   ReactiveFormsModule,
   Validators,
-} from '@angular/forms';
-import { User, UserRole } from '../../core/auth/auth-models.model';
+  AbstractControl,
+  ValidationErrors,
+} from '@angular/forms';import { User, UserRole } from '../../core/auth/auth-models.model';
 import { UsersService } from './users-data';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 type SortField = 'username' | 'displayName' | 'email';
 type SortDirection = 'asc' | 'desc';
+
+function atLeastOneRoleValidator(control: AbstractControl,): ValidationErrors | null {
+  const roles = control.value as UserRole[];
+
+  return roles.length > 0
+    ? null
+    : { required: true };
+}
 
 @Component({
   selector: 'app-users',
@@ -30,7 +39,7 @@ export class Users implements OnInit {
     username: ['', Validators.required],
     displayName: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    role: ['user' as UserRole, Validators.required],
+    roles: this.formBuilder.nonNullable.control<UserRole[]>(['user'], atLeastOneRoleValidator ),
   });
 
   showCreateForm = false;
@@ -124,7 +133,7 @@ export class Users implements OnInit {
       username: '',
       displayName: '',
       email: '',
-      role: 'user',
+      roles: ['user'],
     });
 
     this.showCreateForm = true;
@@ -137,7 +146,7 @@ export class Users implements OnInit {
       username: user.username,
       displayName: user.displayName,
       email: user.email,
-      role: user.roles[0] ?? 'user',
+      roles: user.roles,
     });
 
     this.showCreateForm = true;
@@ -170,7 +179,7 @@ export class Users implements OnInit {
         username: formValue.username,
         displayName: formValue.displayName,
         email: formValue.email,
-        roles: [formValue.role],
+        roles: formValue.roles,
       };
 
       this.usersService.updateUser(user);
@@ -186,7 +195,7 @@ export class Users implements OnInit {
         username: formValue.username,
         displayName: formValue.displayName,
         email: formValue.email,
-        roles: [formValue.role],
+        roles: formValue.roles,
       };
 
       this.usersService.createUser(user);
