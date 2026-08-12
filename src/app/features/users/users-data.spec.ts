@@ -1,34 +1,107 @@
 import { TestBed } from '@angular/core/testing';
+import {
+  HttpTestingController,
+  provideHttpClientTesting,
+} from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+
 import { UsersService } from './users-data';
 import { User } from '../../core/auth/auth-models.model';
 
 describe('UsersService', () => {
   let service: UsersService;
+  let httpTestingController: HttpTestingController;
+
+  const apiUrl = 'https://jsonplaceholder.typicode.com/users';
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+    });
+
     service = TestBed.inject(UsersService);
+    httpTestingController = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpTestingController.verify();
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should return all users', () => {
-    expect(service.getUsers()).toHaveLength(7);
+  it('should GET all users', () => {
+    const mockResponse = [
+      {
+        id: 1,
+        name: 'John Doe',
+        username: 'john.doe',
+        email: 'john.doe@example.com',
+      },
+      {
+        id: 2,
+        name: 'Jane Smith',
+        username: 'jane.smith',
+        email: 'jane.smith@example.com',
+      },
+    ];
+
+    service.getUsers().subscribe((users) => {
+      expect(users).toEqual([
+        {
+          id: '1',
+          username: 'john.doe',
+          displayName: 'John Doe',
+          email: 'john.doe@example.com',
+          roles: ['user'],
+        },
+        {
+          id: '2',
+          username: 'jane.smith',
+          displayName: 'Jane Smith',
+          email: 'jane.smith@example.com',
+          roles: ['user'],
+        },
+      ]);
+    });
+
+    const request = httpTestingController.expectOne(apiUrl);
+
+    expect(request.request.method).toBe('GET');
+
+    request.flush(mockResponse);
   });
 
-  it('should return a user by id', () => {
-    const user = service.getUserById('2');
+  it('should GET a user by id', () => {
+    const mockResponse = {
+      id: 2,
+      name: 'John Doe',
+      username: 'john.doe',
+      email: 'john.doe@example.com',
+    };
 
-    expect(user?.username).toBe('john.doe');
+    service.getUserById('2').subscribe((user) => {
+      expect(user).toEqual({
+        id: '2',
+        username: 'john.doe',
+        displayName: 'John Doe',
+        email: 'john.doe@example.com',
+        roles: ['user'],
+      });
+    });
+
+    const request = httpTestingController.expectOne(`${apiUrl}/2`);
+
+    expect(request.request.method).toBe('GET');
+
+    request.flush(mockResponse);
   });
 
-  it('should return undefined for an unknown id', () => {
-    expect(service.getUserById('unknown')).toBeUndefined();
-  });
-
-  it('should create a user', () => {
+  it('should POST a new user', () => {
     const user: User = {
       id: '99',
       username: 'alfa',
@@ -37,12 +110,34 @@ describe('UsersService', () => {
       roles: ['user'],
     };
 
-    service.createUser(user);
+    const mockResponse = {
+      id: 101,
+      name: 'Alfa Beta',
+      username: 'alfa',
+      email: 'alfa@beta.com',
+    };
 
-    expect(service.getUserById('99')).toEqual(user);
+    service.createUser(user).subscribe((createdUser) => {
+      expect(createdUser).toEqual({
+        ...user,
+        id: '101',
+      });
+    });
+
+    const request = httpTestingController.expectOne(apiUrl);
+
+    expect(request.request.method).toBe('POST');
+
+    expect(request.request.body).toEqual({
+      name: 'Alfa Beta',
+      username: 'alfa',
+      email: 'alfa@beta.com',
+    });
+
+    request.flush(mockResponse);
   });
 
-  it('should update an existing user', () => {
+  it('should PUT an existing user', () => {
     const user: User = {
       id: '2',
       username: 'john.doe',
@@ -51,28 +146,37 @@ describe('UsersService', () => {
       roles: ['manager'],
     };
 
-    expect(service.updateUser(user)).toBe(true);
-    expect(service.getUserById('2')).toEqual(user);
+    service.updateUser(user).subscribe((updatedUser) => {
+      expect(updatedUser).toEqual(user);
+    });
+
+    const request = httpTestingController.expectOne(`${apiUrl}/2`);
+
+    expect(request.request.method).toBe('PUT');
+
+    expect(request.request.body).toEqual({
+      name: 'John Updated',
+      username: 'john.doe',
+      email: 'john.updated@example.com',
+    });
+
+    request.flush({
+      id: 2,
+      name: 'John Updated',
+      username: 'john.doe',
+      email: 'john.updated@example.com',
+    });
   });
 
-  it('should return false when updating an unknown user', () => {
-    const user: User = {
-      id: '999',
-      username: 'unknown',
-      displayName: 'Unknown',
-      email: 'unknown@example.com',
-      roles: ['user'],
-    };
+  it('should DELETE a user', () => {
+    service.deleteUser('3').subscribe((result) => {
+      expect(result).toBeUndefined();
+    });
 
-    expect(service.updateUser(user)).toBe(false);
-  });
+    const request = httpTestingController.expectOne(`${apiUrl}/3`);
 
-  it('should delete an existing user', () => {
-    expect(service.deleteUser('3')).toBe(true);
-    expect(service.getUserById('3')).toBeUndefined();
-  });
+    expect(request.request.method).toBe('DELETE');
 
-  it('should return false when deleting an unknown user', () => {
-    expect(service.deleteUser('999')).toBe(false);
+    request.flush(null);
   });
 });
