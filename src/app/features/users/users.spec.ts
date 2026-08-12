@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { Users } from './users';
+import { UsersService } from './users-data';
 
 describe('Users', () => {
   let component: Users;
@@ -9,6 +10,7 @@ describe('Users', () => {
   const router = {
     navigate: vi.fn(),
   };
+  let usersService: UsersService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -36,6 +38,7 @@ describe('Users', () => {
       ],    
     }).compileComponents();
 
+    usersService = TestBed.inject(UsersService);
     fixture = TestBed.createComponent(Users);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -54,7 +57,7 @@ describe('Users', () => {
       username: 'admin',
       displayName: 'System Administrator',
       email: 'admin@example.com',
-      role: 'admin',
+      roles: ['admin'],
     });
   });  
 
@@ -63,7 +66,7 @@ describe('Users', () => {
       username: 'admin',
       displayName: 'Updated Administrator',
       email: 'updated@example.com',
-      role: 'admin',
+      roles: ['admin'],
     });
 
     component.onSubmit();
@@ -266,4 +269,55 @@ describe('Users', () => {
       .toContain(String(component.totalPages));
   });
 
+  it('should populate all user roles when editing', () => {
+    const user = component.users.find(
+      (user) => user.username === 'admin',
+    );
+
+    expect(user).toBeTruthy();
+
+    component.openEditForm(user!);
+
+    expect(component.userForm.getRawValue().roles).toEqual(
+      user!.roles,
+    );
+  });
+
+  it('should require at least one role', () => {
+    component.userForm.controls.roles.setValue([]);
+    component.userForm.controls.roles.markAsTouched();
+
+    expect(component.userForm.controls.roles.invalid).toBe(true);
+    expect(
+      component.userForm.controls.roles.hasError('required'),
+    ).toBe(true);
+  });
+
+  it('should save all selected roles when editing', () => {
+    component.openEditForm(component.users[0]);
+
+    component.userForm.patchValue({
+      roles: ['admin', 'manager'],
+    });
+
+    component.onSubmit();
+
+    const updatedUser = component.users.find(
+      (user) => user.id === component.users[0].id,
+    );
+
+    expect(updatedUser?.roles).toEqual(['admin', 'manager']);
+
+    const updated2User = usersService.getUserById(
+      component.users[0].id,
+    );
+    
+    expect(updated2User?.roles).toEqual(['admin', 'manager']);
+  });
+
+  it('should accept one or more roles', () => {
+    component.userForm.controls.roles.setValue(['admin', 'manager']);
+
+    expect(component.userForm.controls.roles.valid).toBe(true);
+  });
 });

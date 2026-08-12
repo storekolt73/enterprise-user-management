@@ -54,10 +54,10 @@
       <input type="text" formControlName="username" />
 
       @if (
-        userForm.controls.username.invalid &&
-        userForm.controls.username.touched
+        userForm.controls.username.touched &&
+        userForm.controls.username.hasError('required')
       ) {
-        <span>Username is required.</span>
+        <span class="form-error">Username is required.</span>
       }
     </label>
 
@@ -66,10 +66,10 @@
       <input type="text" formControlName="displayName" />
 
       @if (
-        userForm.controls.displayName.invalid &&
-        userForm.controls.displayName.touched
+        userForm.controls.displayName.touched &&
+        userForm.controls.displayName.hasError('required')
       ) {
-        <span>Display name is required.</span>
+        <span class="form-error">Display name is required.</span>
       }
     </label>
 
@@ -78,20 +78,34 @@
       <input type="email" formControlName="email" />
 
       @if (
-        userForm.controls.email.invalid &&
-        userForm.controls.email.touched
+        userForm.controls.email.touched &&
+        userForm.controls.email.hasError('required')
       ) {
-        <span>Enter a valid email address.</span>
+        <span class="form-error">Email is required.</span>
+      }
+
+      @if (
+        userForm.controls.email.touched &&
+        userForm.controls.email.hasError('email')
+      ) {
+        <span class="form-error">Enter a valid email address.</span>
       }
     </label>
 
     <label>
       Role
-      <select formControlName="role">
+      <select formControlName="roles" multiple>
         @for (role of roles; track role) {
           <option [value]="role">{{ role }}</option>
         }
       </select>
+
+      @if (
+        userForm.controls.roles.touched &&
+        userForm.controls.roles.hasError('required')
+      ) {
+        <span class="form-error">At least one role is required.</span>
+      }
     </label>
 
     <div class="user-form__actions">
