@@ -9,12 +9,17 @@
   </div>
 
   <div class="header-user">
-    <span class="user-avatar">SA</span>
+    @if (authService.currentUser(); as session) {
+      <span class="user-avatar">
+        {{ session.user.displayName.slice(0, 2).toUpperCase() }}
+      </span>
 
-    <div>
-      <strong>System Admin</strong>
-      <span>Administrator</span>
-    </div>
+      <div>
+        <strong>{{ session.user.displayName }}</strong>
+        <span>{{ session.user.username }}</span>
+      </div>
+    }
+
     <button type="button" (click)="logout()">
       Logout
     </button>

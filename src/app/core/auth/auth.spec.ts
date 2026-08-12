@@ -53,16 +53,16 @@ describe('AuthService', () => {
     expect(service.isAuthenticated()).toBe(false);
   });
 
-  it('should persist authentication state', () => {
+  it('should expose the current user after login', () => {
     service.login({
       username: 'admin',
       password: 'admin',
     });
 
-    expect(localStorage.getItem('isAuthenticated')).toBe('true');
+    expect(service.currentUser()?.user.username).toBe('admin');
   });
 
-  it('should clear authentication state on logout', () => {
+  it('should clear the current user on logout', () => {
     service.login({
       username: 'admin',
       password: 'admin',
@@ -70,7 +70,41 @@ describe('AuthService', () => {
 
     service.logout();
 
+    expect(service.currentUser()).toBeNull();
     expect(service.isAuthenticated()).toBe(false);
-    expect(localStorage.getItem('isAuthenticated')).toBeNull();
   });
+
+  it('should restore the session from localStorage', () => {
+    const session = {
+      user: {
+        id: 'usr-001',
+        username: 'admin',
+        displayName: 'System Administrator',
+        email: 'admin@example.com',
+        roles: ['admin'],
+      },
+      token: 'mock-access-token',
+    };
+
+    localStorage.setItem('authSession', JSON.stringify(session));
+
+    TestBed.resetTestingModule();
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          { path: 'login', component: Login },
+        ]),
+      ],
+    });
+    
+    const restoredService = TestBed.inject(AuthService);
+
+    expect(restoredService.isAuthenticated()).toBe(true);
+    expect(restoredService.currentUser()?.user.username).toBe('admin');
+    expect(restoredService.currentUser()?.user.displayName).toBe(
+      'System Administrator',
+    );
+  });
+
 });
