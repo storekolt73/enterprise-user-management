@@ -1,14 +1,33 @@
 import { ActivatedRoute } from '@angular/router';
 import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { UserDetails } from './user-details';
 import { UsersService } from '../users-data';
+import { User } from '../../../core/auth/auth-models.model';
 
 describe('UserDetails', () => {
+  const mockUser: User = {
+    id: '1',
+    username: 'admin',
+    displayName: 'System Administrator',
+    email: 'admin@example.com',
+    roles: ['admin'],
+  };
+
+  const usersServiceMock = {
+    getUserById: vi.fn((id: string) =>
+      of(id === mockUser.id ? mockUser : undefined),
+    ),
+  };
+
   function createComponent(userId: string) {
     TestBed.configureTestingModule({
       imports: [UserDetails],
       providers: [
-        UsersService,
+        {
+          provide: UsersService,
+          useValue: usersServiceMock,
+        },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -28,6 +47,10 @@ describe('UserDetails', () => {
 
     return fixture;
   }
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it('should create', () => {
     const fixture = createComponent('1');
@@ -59,7 +82,6 @@ describe('UserDetails', () => {
     const fixture = createComponent('1');
     const compiled = fixture.nativeElement as HTMLElement;
 
-    expect(compiled.textContent).toContain('Edit');
+    expect(compiled.textContent).toContain('Edit user');
   });
-
 });

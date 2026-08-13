@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -44,8 +44,16 @@ export class Users implements OnInit {
   private readonly usersService = inject(UsersService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  readonly users = this.usersService.getUsers();
   readonly roles: UserRole[] = ['admin', 'manager', 'user'];
+  readonly users = signal<User[]>([]);
+  showCreateForm = signal(false);
+  editingUserId = signal<string | null>(null);
+  searchTerm = signal('');
+  selectedRole = signal<UserRole | 'all'>('all');
+  currentPage = signal(1);
+  pageSize = signal(5);
+  sortField = signal<SortField | null>(null);
+  sortDirection = signal<SortDirection>('asc');
 
   readonly userForm = this.formBuilder.nonNullable.group({
     username: ['', Validators.required],
@@ -54,20 +62,12 @@ export class Users implements OnInit {
     roles: this.formBuilder.nonNullable.control<UserRole[]>(['user'], atLeastOneRoleValidator ),
   });
 
-  showCreateForm = false;
-  editingUserId: string | null = null;
+  readonly filteredUsers = computed(() => {
+    const users = this.users();
+    const search = this.searchTerm().trim().toLowerCase();
+    const selectedRole = this.selectedRole();
 
-  searchTerm = '';
-  selectedRole: UserRole | 'all' = 'all';
-  currentPage = 1;
-  pageSize = 5;
-  sortField: SortField | null = null;
-  sortDirection: SortDirection = 'asc';
-
-  get filteredUsers(): User[] {
-    const search = this.searchTerm.trim().toLowerCase();
-
-    return this.users.filter((user) => {
+    return users.filter((user) => {
       const matchesSearch =
         !search ||
         user.username.toLowerCase().includes(search) ||
@@ -75,71 +75,76 @@ export class Users implements OnInit {
         user.email.toLowerCase().includes(search);
 
       const matchesRole =
-        this.selectedRole === 'all' ||
-        user.roles.includes(this.selectedRole);
+        selectedRole === 'all' ||
+        user.roles.includes(selectedRole);
 
       return matchesSearch && matchesRole;
     });
-  }
+  });
 
-  get paginatedUsers(): User[] {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    return this.sortedUsers.slice(
+  readonly paginatedUsers = computed(() => {
+    const startIndex =
+      (this.currentPage() - 1) * this.pageSize();
+
+    return this.sortedUsers().slice(
       startIndex,
-      startIndex + this.pageSize,
+      startIndex + this.pageSize(),
     );
-  }
+  });
 
-  get sortedUsers(): User[] {
-    const users = [...this.filteredUsers];
-    if (!this.sortField) {
+  readonly sortedUsers = computed(() => {
+    const users = [...this.filteredUsers()];
+    const field = this.sortField();
+
+    if (!field) {
       return users;
     }
 
     users.sort((a, b) => {
-      const aValue = a[this.sortField!].toLowerCase();
-      const bValue = b[this.sortField!].toLowerCase();
+      const aValue = a[field].toLowerCase();
+      const bValue = b[field].toLowerCase();
 
       const comparison = aValue.localeCompare(bValue);
 
-      return this.sortDirection === 'asc'
+      return this.sortDirection() === 'asc'
         ? comparison
         : -comparison;
     });
 
     return users;
-  }
+  });
 
-  get totalPages(): number {
-    return Math.ceil(this.filteredUsers.length / this.pageSize);
-  }
+  readonly totalPages = computed(() =>
+    Math.ceil(
+      this.filteredUsers().length / this.pageSize(),
+    ),
+  );
 
   previousPage(): void {
-    if (this.currentPage > 1) {
-      this.currentPage--;
+    if (this.currentPage() > 1) {
+      this.currentPage.update((value) => value - 1);
     }
   }
 
   nextPage(): void {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update((value) => value + 1);
     }
   }
 
   sortBy(field: SortField): void {
-    if (this.sortField === field) {
-      this.sortDirection =
-        this.sortDirection === 'asc' ? 'desc' : 'asc';
+    if (this.sortField() === field) {
+      this.sortDirection.update((value) => value === 'asc' ? 'desc' : 'asc');
     } else {
-      this.sortField = field;
-      this.sortDirection = 'asc';
+      this.sortField.set(field);
+      this.sortDirection.set('asc');
     }
 
-    this.currentPage = 1;
+    this.currentPage.set(1);
   }
   
   openCreateForm(): void {
-    this.editingUserId = null;
+    this.editingUserId.set(null);
 
     this.userForm.reset({
       username: '',
@@ -148,11 +153,11 @@ export class Users implements OnInit {
       roles: ['user'],
     });
 
-    this.showCreateForm = true;
+    this.showCreateForm.set(true);
   }
 
   openEditForm(user: User): void {
-    this.editingUserId = user.id;
+    this.editingUserId.set(user.id);
 
     this.userForm.reset({
       username: user.username,
@@ -161,22 +166,44 @@ export class Users implements OnInit {
       roles: user.roles,
     });
 
-    this.showCreateForm = true;
+    this.showCreateForm.set(true);
   }
 
   cancelForm(): void {
-    const editingUserId = this.editingUserId;
+    const editingUserId = this.editingUserId();
 
-    this.showCreateForm = false;
-    this.editingUserId = null;
+    this.showCreateForm.set(false);
+    this.editingUserId.set(null);
 
     if (editingUserId && this.route.snapshot.queryParamMap.has('edit')) {
       void this.router.navigate(['/users', editingUserId]);
     }
   }
 
+  ngOnInit(): void {
+    this.usersService.getUsers().subscribe((users) => {
+      this.users.set(users);
+    });
+    
+    this.route.queryParamMap.subscribe((params) => {
+      const userId = params.get('edit');
+
+      if (!userId) {
+        return;
+      }
+
+      this.usersService.getUserById(userId).subscribe((user) => {
+        if (user) {
+          this.openEditForm(user);
+        }
+      });
+
+    });
+  }
+
   onSubmit(): void {
-    const returnToDetails = this.route.snapshot.queryParamMap.has('edit');
+    const returnToDetails =
+      this.route.snapshot.queryParamMap.has('edit');
 
     if (this.userForm.invalid) {
       this.userForm.markAllAsTouched();
@@ -185,37 +212,60 @@ export class Users implements OnInit {
 
     const formValue = this.userForm.getRawValue();
 
-    if (this.editingUserId) {
+    if (this.editingUserId()) {
       const user: User = {
-        id: this.editingUserId,
+        id: this.editingUserId()!,
         username: formValue.username,
         displayName: formValue.displayName,
         email: formValue.email,
         roles: formValue.roles,
       };
 
-      this.usersService.updateUser(user);
+      this.usersService.updateUser(user).subscribe((updatedUser) => {
+        this.users.update((users) => {
+          const index = users.findIndex(
+            (existingUser) => existingUser.id === updatedUser.id,
+          );
 
-      if (returnToDetails && this.editingUserId) {
-        void this.router.navigate(['/users', this.editingUserId]);
-        return;
-      }
+          if (index === -1) {
+            return users;
+          }
 
-    } else {
-      const user: User = {
-        id: crypto.randomUUID(),
-        username: formValue.username,
-        displayName: formValue.displayName,
-        email: formValue.email,
-        roles: formValue.roles,
-      };
+          const updatedUsers = [...users];
+          updatedUsers[index] = updatedUser;
 
-      this.usersService.createUser(user);
+          return updatedUsers;
+        });
+
+        if (returnToDetails) {
+          void this.router.navigate(['/users', updatedUser.id]);
+          return;
+        }
+
+        this.cancelForm();
+      });
+
+      return;
     }
 
-    this.cancelForm();
+    const user: User = {
+      id: crypto.randomUUID(),
+      username: formValue.username,
+      displayName: formValue.displayName,
+      email: formValue.email,
+      roles: formValue.roles,
+    };
+
+    this.usersService.createUser(user).subscribe((createdUser) => {
+      this.users.update((users) => [
+        ...users,
+        createdUser,
+      ]);      
+
+      this.cancelForm();
+    });
   }
-  
+
   deleteUser(user: User): void {
     const confirmed = window.confirm(
       `Are you sure you want to delete ${user.displayName}?`,
@@ -225,28 +275,18 @@ export class Users implements OnInit {
       return;
     }
 
-    this.usersService.deleteUser(user.id);
-  }
-
-  ngOnInit(): void {
-    this.route.queryParamMap.subscribe((params) => {
-      const userId = params.get('edit');
-
-      if (!userId) {
-        return;
-      }
-
-      const user = this.usersService.getUserById(userId);
-
-      if (user) {
-        this.openEditForm(user);
-      }
+    this.usersService.deleteUser(user.id).subscribe(() => {
+      this.users.update((users) =>
+        users.filter(
+          (existingUser) => existingUser.id !== user.id,
+        ),
+      );
     });
   }
 
   onPageChange(event: PageEvent): void {
-    this.currentPage = event.pageIndex + 1;
-    this.pageSize = event.pageSize;
+    this.currentPage.set(event.pageIndex + 1);
+    this.pageSize.set(event.pageSize);
   }
 
   onSortChange(sort: Sort): void {
@@ -254,8 +294,8 @@ export class Users implements OnInit {
       return;
     }
 
-    this.sortField = sort.active as SortField;
-    this.sortDirection = sort.direction;
-    this.currentPage = 1;
+    this.sortField.set(sort.active as SortField);
+    this.sortDirection.set(sort.direction);
+    this.currentPage.set(1);
   }
 }

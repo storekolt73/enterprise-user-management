@@ -1,10 +1,10 @@
 <section class="user-details">
-  @if (user) {
+  @if (user(); as currentUser) {
     <div class="page-header">
       <div class="page-header__content">
         <span class="page-header__eyebrow">User details</span>
-        <h1>{{ user.displayName }}</h1>
-        <p>{{ user.username }}</p>
+        <h1>{{ currentUser.displayName }}</h1>
+        <p>{{ currentUser.username }}</p>
       </div>
 
       <div class="page-actions">
@@ -15,7 +15,7 @@
         <a
           class="button button--primary"
           [routerLink]="['/users']"
-          [queryParams]="{ edit: user.id }"
+          [queryParams]="{ edit: currentUser.id }"
         >
           Edit user
         </a>
@@ -25,24 +25,24 @@
     <div class="details-card">
       <div class="detail">
         <span class="detail__label">Username</span>
-        <strong class="detail__value">{{ user.username }}</strong>
+        <strong class="detail__value">{{ currentUser.username }}</strong>
       </div>
 
       <div class="detail">
         <span class="detail__label">Display name</span>
-        <strong class="detail__value">{{ user.displayName }}</strong>
+        <strong class="detail__value">{{ currentUser.displayName }}</strong>
       </div>
 
       <div class="detail">
         <span class="detail__label">Email</span>
-        <strong class="detail__value">{{ user.email }}</strong>
+        <strong class="detail__value">{{ currentUser.email }}</strong>
       </div>
 
       <div class="detail">
         <span class="detail__label">Roles</span>
 
         <div class="role-list">
-          @for (role of user.roles; track role) {
+          @for (role of currentUser.roles; track role) {
             <span class="role-badge">{{ role }}</span>
           }
         </div>
