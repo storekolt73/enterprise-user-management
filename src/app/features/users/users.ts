@@ -1,11 +1,15 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { JsonPipe } from '@angular/common';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
   ReactiveFormsModule,
   Validators,
   AbstractControl,
   ValidationErrors,
-} from '@angular/forms';import { User, UserRole } from '../../core/auth/auth-models.model';
+} from '@angular/forms';
+import { User, UserRole } from '../../core/auth/auth-models.model';
 import { UsersService } from './users-data';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -30,7 +34,8 @@ function atLeastOneRoleValidator(control: AbstractControl,): ValidationErrors | 
   imports: [
     ReactiveFormsModule, 
     RouterLink, 
-    FormsModule, 
+    FormsModule,
+    JsonPipe,
     MatFormFieldModule,
     MatSelectModule,
     MatPaginatorModule,
@@ -54,6 +59,16 @@ export class Users implements OnInit {
   pageSize = signal(5);
   sortField = signal<SortField | null>(null);
   sortDirection = signal<SortDirection>('asc');
+  readonly searchResults = toSignal(
+    toObservable(this.searchTerm).pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((term) =>
+        this.usersService.searchUsers(term),
+      ),
+    ),
+    { initialValue: [] },
+  );
 
   readonly userForm = this.formBuilder.nonNullable.group({
     username: ['', Validators.required],
@@ -298,4 +313,5 @@ export class Users implements OnInit {
     this.sortDirection.set(sort.direction);
     this.currentPage.set(1);
   }
+  
 }

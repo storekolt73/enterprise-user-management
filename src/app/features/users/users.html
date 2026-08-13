@@ -5,11 +5,11 @@
       <p>Manage application users.</p>
     </div>
 
-    <span class="user-count">
-      {{ users().length }} users
-    </span>
-
     @if (!showCreateForm()) {
+      <span class="user-count">
+        {{ users().length }} users
+      </span>
+
       <button type="button" (click)="openCreateForm()">
         Create User
       </button>
@@ -25,7 +25,8 @@
         id="user-search"
         type="search"
         [(ngModel)]="searchTerm"
-        (input)="currentPage.set(1)"
+        (ngModelChange)="searchTerm.set($event); currentPage.set(1)"
+        /* (input)="currentPage.set(1)" */
         placeholder="Search by username, name or email"
       />
     </div>
@@ -43,6 +44,9 @@
           <option [value]="role">{{ role }}</option>
         }
       </select>
+    </div>
+    <div>
+      Result cnt: {{ searchResults().length }}
     </div>
   </div>
 
