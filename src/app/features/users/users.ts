@@ -1,5 +1,4 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
-import { JsonPipe } from '@angular/common';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -17,6 +16,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
+import { EmptyState } from '../../shared/ui/empty-state/empty-state';
+import { Dialog } from '@angular/cdk/dialog';
+import { ConfirmDialog } from '../../shared/ui/dialog/dialog';
+import { ToastService } from '../../shared/ui/toast/toast service';
 
 type SortField = 'username' | 'displayName' | 'email';
 type SortDirection = 'asc' | 'desc';
@@ -35,11 +38,11 @@ function atLeastOneRoleValidator(control: AbstractControl,): ValidationErrors | 
     ReactiveFormsModule, 
     RouterLink, 
     FormsModule,
-    JsonPipe,
     MatFormFieldModule,
     MatSelectModule,
     MatPaginatorModule,
     MatSortModule,
+    EmptyState,
   ],
   templateUrl: './users.html',
   styleUrl: './users.scss',
@@ -49,6 +52,8 @@ export class Users implements OnInit {
   private readonly usersService = inject(UsersService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly dialog = inject(Dialog);
+  private readonly toastService = inject(ToastService);
   readonly roles: UserRole[] = ['admin', 'manager', 'user'];
   readonly users = signal<User[]>([]);
   showCreateForm = signal(false);
@@ -282,20 +287,27 @@ export class Users implements OnInit {
   }
 
   deleteUser(user: User): void {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete ${user.displayName}?`,
-    );
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      data: {
+        title: 'Delete user',
+        message: `Are you sure you want to delete ${user.displayName}?`,
+      },
+    });
 
-    if (!confirmed) {
-      return;
-    }
+    dialogRef.closed.subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
 
-    this.usersService.deleteUser(user.id).subscribe(() => {
-      this.users.update((users) =>
-        users.filter(
-          (existingUser) => existingUser.id !== user.id,
-        ),
-      );
+      this.usersService.deleteUser(user.id).subscribe(() => {
+        this.users.update((users) =>
+          users.filter(
+            (existingUser) => existingUser.id !== user.id,
+          ),
+        );
+        
+        this.toastService.show('User deleted successfully.', 'success');
+      });
     });
   }
 
@@ -314,4 +326,9 @@ export class Users implements OnInit {
     this.currentPage.set(1);
   }
   
+  clearFilters(): void {
+    this.searchTerm.set('');
+    this.selectedRole.set('all');
+    this.currentPage.set(1);
+  }
 }

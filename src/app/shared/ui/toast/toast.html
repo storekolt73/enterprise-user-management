@@ -1,0 +1,7 @@
+<div
+  class="toast"
+  [class.toast--success]="type() === 'success'"
+  [class.toast--error]="type() === 'error'"
+>
+  {{ message() }}
+</div>

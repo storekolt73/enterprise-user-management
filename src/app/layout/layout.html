@@ -39,6 +39,13 @@
     </nav>
   </aside>
 
+  @if (toastService.message(); as message) {
+    <app-toast
+      [message]="message"
+      [type]="toastService.type()"
+    />
+  }
+
   <main class="app-content">
     <router-outlet />
   </main>
