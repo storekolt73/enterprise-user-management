@@ -27,6 +27,30 @@ export class UsersService {
       );
   }
 
+  searchUsers(term: string): Observable<User[]> {
+    return this.http
+      .get<JsonPlaceholderUser[]>(this.apiUrl)
+      .pipe(
+        map((users) =>
+          users.filter(
+            (user) =>
+              user.username
+                .toLowerCase()
+                .includes(term.toLowerCase()) ||
+              user.name
+                .toLowerCase()
+                .includes(term.toLowerCase()) ||
+              user.email
+                .toLowerCase()
+                .includes(term.toLowerCase()),
+          ),
+        ),
+      )
+      .pipe(
+        map((users) => users.map((user) => this.toUser(user))),
+      );
+  }
+
   getUserById(id: string): Observable<User | undefined> {
     return this.http
       .get<JsonPlaceholderUser>(`${this.apiUrl}/${id}`)
