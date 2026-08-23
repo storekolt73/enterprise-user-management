@@ -20,6 +20,8 @@ import { EmptyState } from '../../shared/ui/empty-state/empty-state';
 import { Dialog } from '@angular/cdk/dialog';
 import { ConfirmDialog } from '../../shared/ui/dialog/dialog';
 import { ToastService } from '../../shared/ui/toast/toast service';
+import { TableModule, TablePageEvent } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
 
 type SortField = 'username' | 'displayName' | 'email';
 type SortDirection = 'asc' | 'desc';
@@ -43,6 +45,8 @@ function atLeastOneRoleValidator(control: AbstractControl,): ValidationErrors | 
     MatPaginatorModule,
     MatSortModule,
     EmptyState,
+    TableModule,
+    TagModule,
   ],
   templateUrl: './users.html',
   styleUrl: './users.scss',
@@ -331,4 +335,10 @@ export class Users implements OnInit {
     this.selectedRole.set('all');
     this.currentPage.set(1);
   }
+
+  onTablePageChange(event: TablePageEvent): void {
+    this.currentPage.set(event.first + 1);
+    this.pageSize.set(event.rows);
+  }
+
 }
