@@ -38,6 +38,18 @@ export const routes: Routes = [
         canActivate: [authGuard],
       },
       {
+        path: 'user-table',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/user-table/user-table').then((m) => m.UserTable),
+      },
+      {
+        path: 'user-data-view',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/user-data-view/user-data-view').then((m) => m.UserDataView),
+      },
+      {
         path: '**',
         loadComponent: () =>
           import('./features/not-found/not-found').then((m) => m.NotFound),

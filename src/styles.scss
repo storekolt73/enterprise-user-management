@@ -4,6 +4,7 @@
 // Learn more about theming and how to use it for your application's
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
+@import "primeicons/primeicons.css";
 
 html {
   height: 100%;
@@ -50,4 +51,23 @@ body {
 body {
   min-height: 100vh;
 }
+
 /* You can add global styles to this file, and also import other style files */
+
+button, .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1rem;
+  padding: 0.3rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+}

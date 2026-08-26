@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, map, of } from 'rxjs';
-import { User } from '../../core/auth/auth-models.model';
+import { User, UserRole } from '../../core/auth/auth-models.model';
 
 interface JsonPlaceholderUser {
   id: number;
@@ -97,12 +97,13 @@ export class UsersService {
   }
 
   private toUser(user: JsonPlaceholderUser): User {
+    const role: UserRole[] = ['user', Math.random() < 0.5 ? 'admin' : 'manager'];
     return {
       id: String(user.id),
       username: user.username,
       displayName: user.name,
       email: user.email,
-      roles: ['user'],
+      roles: role,
     };
   }
 }

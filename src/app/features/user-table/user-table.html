@@ -1,0 +1,99 @@
+<section class="users-page">
+    <header class="page-header">
+        <div>
+            <h1>User table</h1>
+            <p>View and manage application users.</p>
+        </div>
+
+        <span class="user-count">
+            {{ filteredUsers().length }} users
+        </span>
+    </header>
+
+    <div class="filters">
+        <div class="search-bar">
+            <label for="user-search">Search users</label>
+
+            <input id="user-search" type="search" 
+                [(ngModel)]="searchTerm"
+                (ngModelChange)="searchTerm.set($event); currentPage.set(1)"
+                placeholder="Search by username, name or email" />
+        </div>
+
+        <div class="role-filter">
+            <label for="role-filter">Role</label>
+            <select id="role-filter" [(ngModel)]="selectedRole" (change)="currentPage.set(1)">
+
+                <option value="all">All roles</option>
+
+                @for (role of roles; track role) {
+                    <option [value]="role">{{ role }}</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <p-table class="users-table" [value]="filteredUsers()" 
+        [tableStyle]="{ 'min-width': '50rem' }" 
+        [paginator]="true"
+        [rows]="pageSize()" 
+        (onPage)="onTablePageChange($event)" 
+        [totalRecords]="filteredUsers().length" 
+        removableSort
+        [rowsPerPageOptions]="[3, 5, 10, 25]">
+        <ng-template #header>
+            <tr>
+                <th pSortableColumn="displayName">
+                    <div class="flex items-center gap-2">
+                        Name
+                        <p-sort-icon field="displayName" />
+                    </div>
+                </th>
+                <th pSortableColumn="username">
+                    <div class="flex items-center gap-2">
+                        Username
+                        <p-sort-icon field="username" />
+                    </div>
+                </th>
+                <th pSortableColumn="email">
+                    <div class="flex items-center gap-2">
+                        Email
+                        <p-sort-icon field="email" />
+                    </div>
+                </th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-user>
+            <tr>
+                <td>
+                    <span class="font-medium">{{ user.displayName }}</span>
+                </td>
+                <td>
+                    <a [routerLink]="['/users', user.id]">
+                        {{ user.username }}
+                    </a>
+                </td>
+                <td>{{ user.email }}</td>
+                <td>
+                    @for (role of user.roles; track role) {
+                        <p-tag [value]="role"></p-tag>
+                    }
+                </td>
+                <td class="user-table__actions">
+                    <a
+                        class="button button--primary"
+                        [routerLink]="['/users']"
+                        [queryParams]="{ edit: user.id }"
+                    >
+                        Edit
+                    </a>
+                    <button type="button" (click)="deleteUser(user)">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</section>

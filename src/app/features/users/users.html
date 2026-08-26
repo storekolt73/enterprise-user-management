@@ -105,39 +105,14 @@
     }
   </div>
 
-  @if (filteredUsers().length > 0) {
-    <div class="pagination">
-      <button
-        type="button"
-        (click)="previousPage()"
-        [disabled]="currentPage() === 1"
-      >
-        Previous
-      </button>
-
-      <span>
-        Page {{ currentPage() }} of {{ totalPages() }}
-      </span>
-
-      <button
-        type="button"
-        (click)="nextPage()"
-        [disabled]="currentPage() === totalPages()"
-      >
-        Next
-      </button>
-    </div>
-
-    <mat-paginator
-      [length]="sortedUsers().length"
-      [pageSize]="pageSize"
-      [pageSizeOptions]="[5, 10, 25]"
-      [pageIndex]="currentPage() - 1"
-      (page)="onPageChange($event)"
-      aria-label="Select page">
-    </mat-paginator>
-
-  }
+  <mat-paginator class="pagination"
+    [length]="sortedUsers().length"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[5, 10, 25]"
+    [pageIndex]="currentPage() - 1"
+    (page)="onPageChange($event)"
+    aria-label="Select page">
+  </mat-paginator>
 }
 @else {
   <form class="user-form" [formGroup]="userForm" (ngSubmit)="onSubmit()">
@@ -216,63 +191,4 @@
     </div>
   </form>
 }
-
- <p-table 
-    [value]="filteredUsers()"
-    [tableStyle]="{ 'min-width': '50rem' }"
-    [paginator]="true" 
-    [rows]="pageSize()" 
-    (onPage)="onTablePageChange($event)"
-    [totalRecords]="filteredUsers().length" 
-    removableSort
-    [rowsPerPageOptions]="[3, 5, 10, 25]">
-  <ng-template #header>
-    <tr>
-        <th pSortableColumn="displayName">
-          <div class="flex items-center gap-2">
-              Name
-              <p-sort-icon field="displayName" />
-          </div></th>
-        <th pSortableColumn="username">
-          <div class="flex items-center gap-2">
-              Username
-              <p-sort-icon field="username" />
-          </div></th>
-        <th pSortableColumn="email">
-          <div class="flex items-center gap-2">
-              Email
-              <p-sort-icon field="email" />
-          </div></th>
-        <th>Role</th>
-        <th>Actions</th>
-    </tr>
-  </ng-template>
-  <ng-template #body let-user>
-    <tr>
-        <td>
-            <span class="font-medium">{{ user.displayName }}</span>
-        </td>
-        <td>
-          <a [routerLink]="['/users', user.id]">
-            {{ user.username }}
-          </a>
-        </td>
-        <td>{{ user.email }}</td>
-        <td>
-            @for (role of user.roles; track role) {
-                <p-tag [value]="role"></p-tag>
-            }
-        </td>
-        <td class="user-form__actions">
-            <button type="button" (click)="openEditForm(user)">
-                Edit
-            </button>
-            <button type="button" (click)="deleteUser(user)">
-                Delete
-            </button>
-        </td>
-    </tr>
-  </ng-template>
- </p-table>
-
 </section>
