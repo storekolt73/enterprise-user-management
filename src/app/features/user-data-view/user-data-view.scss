@@ -1,0 +1,276 @@
+.users-page {
+  padding: 1rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  h1 {
+    margin: 0 0 0.35rem;
+    font-size: 1.75rem;
+  }
+
+  p {
+    margin: 0;
+    color: #64748b;
+  }
+}
+
+.user-count {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.875rem;
+}
+
+.users-table {
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background: #ffffff;
+}
+
+.user-table__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .users-page {
+    padding: 0.5rem;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .users-table {
+    overflow-x: auto;
+  }
+
+  .table-header,
+  .table-row {
+    min-width: 700px;
+  }
+}
+
+.search-bar {
+  display: grid;
+  gap: 0.4rem;
+  max-width: 32rem;
+  margin-bottom: 1.5rem;
+}
+
+.search-bar label {
+  color: #475569;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.search-bar input {
+  padding: 0.7rem 0.8rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  font: inherit;
+}
+
+.search-bar input:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: 1px;
+}
+
+.filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.filters .search-bar,
+.filters .role-filter {
+  margin-bottom: 0;
+}
+
+.filters .search-bar {
+  flex: 1;
+  max-width: 32rem;
+}
+
+.filters .role-filter {
+  width: 12rem;
+  max-width: none;
+}
+
+.role-filter {
+  display: grid;
+  gap: 0.4rem;
+  max-width: 20rem;
+  margin-bottom: 1.5rem;
+}
+
+.role-filter label {
+  color: #475569;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.role-filter select {
+  padding: 0.7rem 0.8rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  font: inherit;
+}
+
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.user-card {
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.user-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.user-card__name {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.user-card__roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.user-card__username,
+.user-card__email {
+  color: #6b7280;
+}
+
+.user-card__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+@media (min-width: 768px) {
+  .users-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .users-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.users-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fff;
+
+  &:first-child {
+    border-top: 1px solid #e5e7eb;
+  }
+
+  &:hover {
+    background: #f9fafb;
+  }
+}
+
+.user-list-item__main {
+  min-width: 0;
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(220px, 1.5fr) auto;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.user-list-item__identity {
+  min-width: 0;
+}
+
+.user-list-item__name {
+  font-weight: 600;
+  color: #111827;
+}
+
+.user-list-item__username {
+  margin-top: 0.2rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.user-list-item__email {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #4b5563;
+}
+
+.user-list-item__roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.user-list-item__actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.5rem;
+}
+
+@media (max-width: 900px) {
+  .user-list-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .user-list-item__main {
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .user-list-item__actions {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .user-list-item__main {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}

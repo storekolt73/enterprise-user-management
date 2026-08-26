@@ -41,27 +41,6 @@
   flex-shrink: 0;
 }
 
-.button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.5rem;
-  padding: 0.55rem 1rem;
-  border: 1px solid transparent;
-  border-radius: 0.5rem;
-  font: inherit;
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.button--primary {
-  border-color: #2563eb;
-  background: #2563eb;
-  color: #ffffff;
-}
-
 .button--secondary {
   border-color: #cbd5e1;
   background: #ffffff;

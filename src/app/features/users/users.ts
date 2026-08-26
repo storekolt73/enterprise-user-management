@@ -144,6 +144,27 @@ export class Users implements OnInit {
     ),
   );
 
+  ngOnInit(): void {
+    this.usersService.getUsers().subscribe((users) => {
+      this.users.set(users);
+    });
+    
+    this.route.queryParamMap.subscribe((params) => {
+      const userId = params.get('edit');
+
+      if (!userId) {
+        return;
+      }
+
+      this.usersService.getUserById(userId).subscribe((user) => {
+        if (user) {
+          this.openEditForm(user);
+        }
+      });
+
+    });
+  }
+
   previousPage(): void {
     if (this.currentPage() > 1) {
       this.currentPage.update((value) => value - 1);
@@ -202,27 +223,6 @@ export class Users implements OnInit {
     if (editingUserId && this.route.snapshot.queryParamMap.has('edit')) {
       void this.router.navigate(['/users', editingUserId]);
     }
-  }
-
-  ngOnInit(): void {
-    this.usersService.getUsers().subscribe((users) => {
-      this.users.set(users);
-    });
-    
-    this.route.queryParamMap.subscribe((params) => {
-      const userId = params.get('edit');
-
-      if (!userId) {
-        return;
-      }
-
-      this.usersService.getUserById(userId).subscribe((user) => {
-        if (user) {
-          this.openEditForm(user);
-        }
-      });
-
-    });
   }
 
   onSubmit(): void {
@@ -334,11 +334,6 @@ export class Users implements OnInit {
     this.searchTerm.set('');
     this.selectedRole.set('all');
     this.currentPage.set(1);
-  }
-
-  onTablePageChange(event: TablePageEvent): void {
-    this.currentPage.set(event.first + 1);
-    this.pageSize.set(event.rows);
   }
 
 }

@@ -1,0 +1,130 @@
+.users-page {
+  padding: 1rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  h1 {
+    margin: 0 0 0.35rem;
+    font-size: 1.75rem;
+  }
+
+  p {
+    margin: 0;
+    color: #64748b;
+  }
+}
+
+.user-count {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.875rem;
+}
+
+.users-table {
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background: #ffffff;
+}
+
+.user-table__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .users-page {
+    padding: 0.5rem;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .users-table {
+    overflow-x: auto;
+  }
+
+  .table-header,
+  .table-row {
+    min-width: 700px;
+  }
+}
+
+.search-bar {
+  display: grid;
+  gap: 0.4rem;
+  max-width: 32rem;
+  margin-bottom: 1.5rem;
+}
+
+.search-bar label {
+  color: #475569;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.search-bar input {
+  padding: 0.7rem 0.8rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  font: inherit;
+}
+
+.search-bar input:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: 1px;
+}
+
+.filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.filters .search-bar,
+.filters .role-filter {
+  margin-bottom: 0;
+}
+
+.filters .search-bar {
+  flex: 1;
+  max-width: 32rem;
+}
+
+.filters .role-filter {
+  width: 12rem;
+  max-width: none;
+}
+
+.role-filter {
+  display: grid;
+  gap: 0.4rem;
+  max-width: 20rem;
+  margin-bottom: 1.5rem;
+}
+
+.role-filter label {
+  color: #475569;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.role-filter select {
+  padding: 0.7rem 0.8rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  font: inherit;
+}
+
